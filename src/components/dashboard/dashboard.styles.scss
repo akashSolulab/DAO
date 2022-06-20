@@ -1,0 +1,31 @@
+.card {
+    margin-top: 300px;
+    margin-left: 300px;
+    margin-right: 300px;
+}
+
+.card-header p {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: xx-large;
+}
+
+.learn-more {
+    position: absolute;
+    margin-top: 35px;
+    margin-right: 35px;
+    right: 0%;
+    top: 0%;
+}
+
+.vote-button button{ 
+    margin-right: 20px;
+}
+.vote-button button:last-child{
+    margin-right:0px;
+}
+
+.redirect-icon {
+    
+}
