@@ -4,7 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkSquare } from '@fortawesome/free-solid-svg-icons'
 import { balance, 
         delegateGovernanceToken,
-        checkFundReleaseFromTreasury
+        checkFundReleaseFromTreasury,
+        remainingTime,
+        createNewProposal
        } from "../../utils/governace/governace-interaction";
 import { WalletContext } from "../../context/connect-wallet.context";
 
@@ -12,10 +14,13 @@ export default function Dashboard() {
   
   const {account} = useContext(WalletContext);
 
-  console.log(checkFundReleaseFromTreasury());
+  remainingTime();
 
   return (
     <div>
+      <div>
+        <button className="btn btn-outline-dark proposal-button" onClick={() => {createNewProposal()}}>Create proposal</button>
+      </div>
       <div className="card text-center">
         <div className="card-header">
           <p>DAO Voting Proposal</p>
