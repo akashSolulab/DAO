@@ -7,6 +7,8 @@ import {
   createNewProposal,
   remainingTimeToVote,
   castVoteAndParticipate,
+  queueGovernance,
+  executeGovernance
 } from "../../utils/governace/governace-interaction";
 import { WalletContext } from "../../context/connect-wallet.context";
 import { ProposalContext } from "../../context/proposal-state";
@@ -36,15 +38,12 @@ export default function Dashboard() {
 
   return (
     <div>
+        <div className="btn-group">
+          <button className="btn btn-outline-dark" onClick={() => {getProposal()}}>Create Proposal</button>
+          <button className="btn btn-outline-dark" onClick={() => {queueGovernance()}}>Queue Proposal</button>
+          <button className="btn btn-outline-dark" onClick={() => {executeGovernance()}}>Execute Proposal</button>
+        </div>      
       <div>
-        <button
-          className="btn btn-outline-dark proposal-button"
-          onClick={() => {
-            getProposal();
-          }}
-        >
-          <b>Create proposal</b>
-        </button>
       </div>
       <div className="card text-center border border-2 border-dark mb-3">
         <div className="card-header border-dark">
@@ -84,7 +83,7 @@ export default function Dashboard() {
             <button type="button" className="btn btn-warning vote-button-3"
               onClick={async () => {
                 await delegateGovernanceToken(account);
-                await castVoteAndParticipate(proposalId, 0)                   
+                await castVoteAndParticipate(proposalId, 2)                   
               }}
             >
               Abstain

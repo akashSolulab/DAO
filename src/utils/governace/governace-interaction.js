@@ -77,13 +77,19 @@ export const remainingTimeToVote = async (id) => {
     return timeInMinute;
 }
 
+const iface = new ethers.utils.Interface(Treasury.abi);
+// console.log(iface);
+const encodedFunction = iface.encodeFunctionData("releaseFunds");
+// console.log("encoded function", encodedFunction);
+const description = "Release Fund From Treasurybu";
+
 // create proposal
 export const createNewProposal = async () => {
-    const iface = new ethers.utils.Interface(Treasury.abi);
-    // console.log(iface);
-    const encodedFunction = iface.encodeFunctionData("releaseFunds");
-    // console.log("encoded function", encodedFunction);
-    const description = "Release Fund From Treasurybs";
+    // const iface = new ethers.utils.Interface(Treasury.abi);
+    // // console.log(iface);
+    // const encodedFunction = iface.encodeFunctionData("releaseFunds");
+    // // console.log("encoded function", encodedFunction);
+    // const description = "Release Fund From Treasurybs";
 
     await getSigner();
     let tx = await governanceContractInstance.connect(signerObj).propose([treasuryContract], [0], [encodedFunction], description);
@@ -127,12 +133,15 @@ export const getVoteStatics = async (id) => {
     return {voteAgainst, voteFor, voteAbstain};
 }
 
+let hash = ethers.utils.hashMessage(description);
 // create queue for the proposal
-export const queueGovernance = async () => { 
-
+export const queueGovernance = async () => {
+    await getSigner(); 
+    await governanceContractInstance.connect(signerObj).queue([treasuryContract], [0], [encodedFunction], hash);
 }
 
 // create execute the proposal
 export const executeGovernance = async () => {
-
+    await getSigner();
+    await governanceContractInstance.connect(signerObj).execute([treasuryContract], [0], [encodedFunction], hash);
 }
