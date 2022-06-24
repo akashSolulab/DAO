@@ -29,15 +29,15 @@ async function main() {
     // transfer some initial tokens to participants
     // this can be managed using a exchange to provide utility token 
     const amountToTransferInParticipantWallet = ethers.utils.parseEther('100');
-    let transfer_1 = await token.transfer(participant_1, amountToTransferInParticipantWallet);
+    const transfer_1 = await token.transfer(participant_1, amountToTransferInParticipantWallet);
     transfer_1.wait();
-    let transfer_2 = await token.transfer(participant_2, amountToTransferInParticipantWallet);
+    const transfer_2 = await token.transfer(participant_2, amountToTransferInParticipantWallet);
     transfer_2.wait();
-    let transfer_3 = await token.transfer(participant_3, amountToTransferInParticipantWallet);
+    const transfer_3 = await token.transfer(participant_3, amountToTransferInParticipantWallet);
     transfer_3.wait();
-    let transfer_4 = await token.transfer(participant_4, amountToTransferInParticipantWallet);
+    const transfer_4 = await token.transfer(participant_4, amountToTransferInParticipantWallet);
     transfer_4.wait();
-    let transfer_5 = await token.transfer(participant_5, amountToTransferInParticipantWallet);
+    const transfer_5 = await token.transfer(participant_5, amountToTransferInParticipantWallet);
     transfer_5.wait();
 
     // deploying timelock contract

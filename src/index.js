@@ -5,12 +5,15 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { WalletProvider } from './context/connect-wallet.context';
+import { ProposalProvider } from './context/proposal-state';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <WalletProvider>
-      <App />
+      <ProposalProvider>
+        <App />
+      </ProposalProvider>
     </WalletProvider>
   </React.StrictMode>
 );

@@ -3,9 +3,7 @@ import Token from '../../contracts/Token.json'
 import Treasury from '../../contracts/Treasury.json'
 import Governance from '../../contracts/Governance.json'
 import TimeLock from '../../contracts/TimeLock.json'
-
-import moment from 'moment';
-moment().format();
+import moment from "moment";
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
@@ -27,7 +25,7 @@ const timelockContractInstnce = new ethers.Contract(timelockContract, timelockAB
 const governanceContractInstance = new ethers.Contract(governanceContract, governanceABI, provider);
 const treasuryContractInstance = new ethers.Contract(treasuryContract, treasuryABI, provider)
 
-// initiating signerObj and signer
+// initiating signerObj, signer and proposalId
 let signer;
 let signerObj;
 
@@ -51,55 +49,90 @@ export const delegateGovernanceToken = async (walletAddress) => {
     }
 } 
 
+// show in UI - funds inside treasury
+export const fundsInsideTreasury = async () => {
+    let funds = await provider.getBalance(treasuryContract)
+    let parseFunds = ethers.utils.formatEther(String(funds));
+    return parseFunds;
+}
+
 // check is funds released from treasury
 export const checkFundReleaseFromTreasury = async () => {
     return await treasuryContractInstance.connect(provider).isReleased();
 }
 
 // show in UI - time remaining in releasing funds (calculate the block-time and convert into hours, minutes, sec)
-export const remainingTime = async (id) => {
-    let startBlock = await governanceContractInstance.proposalSnapshot(id)
-    let endBlock = await governanceContractInstance.deadline(id)
+export const remainingTimeToVote = async (id) => {
+    console.log("id from time:", id);
+    let startBlock = await governanceContractInstance.connect(provider).proposalSnapshot(id)
+    let endBlock = await governanceContractInstance.connect(provider).proposalDeadline(id)
+    console.log("startblock:", startBlock, "endblock:", endBlock);
     let blockDifference = endBlock - startBlock;
     let timeRate = blockDifference * 15
-    let timeOutput = (timeRate/60)/60
-    console.log(String(timeOutput));
-}
-
-// show in UI funds inside treasury
-export const fundsInsideTreasury = async () => {
-    return await provider.getBalance(treasuryContract);
+    let timeOutput = (timeRate/60)
+    let momentMin = moment().minute(timeOutput)
+    console.log(String(momentMin));
+    console.log(momentMin.minutes());
+    let timeInMinute = momentMin.minutes();
+    return timeInMinute;
 }
 
 // create proposal
 export const createNewProposal = async () => {
     const iface = new ethers.utils.Interface(Treasury.abi);
-    console.log(iface);
+    // console.log(iface);
     const encodedFunction = iface.encodeFunctionData("releaseFunds");
-    console.log("encoded function", encodedFunction);
-    const description = "Release Funds from Treasury";
+    // console.log("encoded function", encodedFunction);
+    const description = "Release Fund From Treasurybs";
 
     await getSigner();
     let tx = await governanceContractInstance.connect(signerObj).propose([treasuryContract], [0], [encodedFunction], description);
-    console.log(tx);
-    const id = tx.logs[0].args.proposalId
-    console.log("proposal id:", String(id));
-    const txLogs = tx.logs[0];
-    console.log("transaction log:", txLogs);
+    // console.log("tx:", tx);
+    let txReceipt = await tx.wait(1);
+    // console.log("txReceipt:", txReceipt);
+    let proposalId = await txReceipt.events[0].args.proposalId;
+    // console.log("proposal Id:", String(proposalId));
+    return String(proposalId);
 }
 
-// get proposal id from the transaction --->   const id = tx.logs[0].args.proposalId
-
 // show in UI - the current STATE of the proposal (use setTimeOut function here)
+export const getProposalState = async (proposalId) => {
+    return await governanceContractInstance.connect(provider).state(proposalId);
+}
 
 // show in UI - quorum(min number of votes required)
+export const getQuorum = async () => {
+    let blockNumber = await provider.getBlockNumber();
+    let quorum = await governanceContractInstance.connect(provider).quorum(blockNumber - 1);
+    let parseQuorum = ethers.utils.formatEther((String(quorum)));
+    return parseQuorum;
+}
 
 // make a function to caste vote - take flag as a input (0, 1, 2)
+// 1 - For
+// 0 - Against
+// 2 - Abstain
+export const castVoteAndParticipate = async (id, vote) => {
+    await getSigner();
+    await governanceContractInstance.connect(signerObj).castVote(id, vote);
+}
 
 // show in UI - voting statics - how many votes are FOR, AGAINST, ABSTAIN
+export const getVoteStatics = async (id) => {
+    let {againstVotes, forVotes, abstainVotes} = await governanceContractInstance.connect(provider).proposalVotes(id);
+    let voteAgainst = Math.trunc(ethers.utils.formatEther(String(againstVotes)));
+    let voteFor = Math.trunc(ethers.utils.formatEther(String(forVotes)));
+    let voteAbstain = Math.trunc(ethers.utils.formatEther(String(abstainVotes)));
+    console.log("votes:", voteAgainst, voteFor, voteAbstain);
+    return {voteAgainst, voteFor, voteAbstain};
+}
 
 // create queue for the proposal
+export const queueGovernance = async () => { 
+
+}
 
 // create execute the proposal
+export const executeGovernance = async () => {
 
-// check for funds released in UI
+}
